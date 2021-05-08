@@ -14,10 +14,32 @@ import { CardsComponent } from './cards/cards.component';
 import { CardDetailsComponent } from './cards/card-details/card-details.component';
 import { CardsListComponent } from './cards/cards-list/cards-list.component';
 import { HomeComponent } from './home/home.component';
+import { MaterialModule } from '@bba/material';
+import { FormsModule } from '@angular/forms';
+import { RoutingModule } from './routing.module';
 
 @NgModule({
-  declarations: [AppComponent, DecksComponent, DeckDetailsComponent, DecksListComponent, UsersComponent, UserDetailsComponent, UsersListComponent, CardsComponent, CardDetailsComponent, CardsListComponent, HomeComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, StoreModule.forRoot({}, {})],
+  declarations: [
+    AppComponent,
+    DecksComponent,
+    DeckDetailsComponent,
+    DecksListComponent,
+    UsersComponent,
+    UserDetailsComponent,
+    UsersListComponent,
+    CardsComponent,
+    CardDetailsComponent,
+    CardsListComponent,
+    HomeComponent,
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    RoutingModule,
+    MaterialModule,
+    StoreModule.forRoot({}, {}),
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
