@@ -34,10 +34,10 @@ let mockCards: Card[] = [
 
 @Injectable()
 export class CardsFacade {
-  private mockCardsSubject: BehaviorSubject<Card[]> = new BehaviorSubject(
+  private cardsSubject: BehaviorSubject<Card[]> = new BehaviorSubject(
     mockCards
   );
-  currentMockCards$ = this.mockCardsSubject.asObservable();
+  currentCards$ = this.cardsSubject.asObservable();
   /**
    * Combine pieces of state using createSelector,
    * and expose them as observables through the facade.
@@ -57,29 +57,30 @@ export class CardsFacade {
   }
 
   createCard(card: Card) {
+    const cards: Card[] = this.cardsSubject.value;
     const newCard = Object.assign({}, card, { id: uuidv4() });
-    let updatedCards: Card[];
-    this.currentMockCards$.subscribe((x) =>
-      x.forEach((card) => updatedCards.push(card))
-    );
-    updatedCards.push(newCard);
-    this.mockCardsSubject.next(updatedCards);
+    const updatedCards: Card[] = [...cards, newCard];
+    this.update(updatedCards);
   }
 
+  // TODO: This needs work
   updateCard(card: Card) {
-    let updatedCards: Card[];
-    this.currentMockCards$.subscribe((x) =>
-      x.forEach((card) => updatedCards.push(card))
-    );
-    updatedCards.push(card);
-    this.mockCardsSubject.next(updatedCards);
+    const cards: Card[] = this.cardsSubject.value;
+    const updatedCards: Card[] = cards.map((x) => {
+      if (x.id === card.id) x = card;
+      return x;
+    });
+    cards.concat(updatedCards);
+    this.update(updatedCards);
   }
 
   deleteCard(card: Card) {
-    let updatedCards: Card[];
-    this.currentMockCards$.subscribe(
-      (x) => (updatedCards = x.filter((d) => d.id !== card.id))
-    );
-    this.mockCardsSubject.next(updatedCards);
+    const cards: Card[] = this.cardsSubject.value;
+    const updatedCards: Card[] = cards.filter((c) => c.id !== card.id);
+    this.update(updatedCards);
+  }
+
+  update(cards: Card[]) {
+    this.cardsSubject.next(cards);
   }
 }

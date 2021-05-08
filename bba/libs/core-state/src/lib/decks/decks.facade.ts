@@ -5,7 +5,7 @@ import { select, Store, Action } from '@ngrx/store';
 import * as DecksActions from './decks.actions';
 import * as DecksFeature from './decks.reducer';
 import * as DecksSelectors from './decks.selectors';
-import { Deck, Card } from '@bba/api-interfaces';
+import { Deck } from '@bba/api-interfaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -29,10 +29,10 @@ let mockDecks: Deck[] = [
 
 @Injectable()
 export class DecksFacade {
-  private mockDecksSubject: BehaviorSubject<Deck[]> = new BehaviorSubject(
+  private decksSubject: BehaviorSubject<Deck[]> = new BehaviorSubject(
     mockDecks
   );
-  currentMockDecks$ = this.mockDecksSubject.asObservable();
+  currentDecks$ = this.decksSubject.asObservable();
   /**
    * Combine pieces of state using createSelector,
    * and expose them as observables through the facade.
@@ -52,29 +52,30 @@ export class DecksFacade {
   }
 
   createDeck(deck: Deck) {
+    const decks: Deck[] = this.decksSubject.value;
     const newDeck = Object.assign({}, deck, { id: uuidv4() });
-    let updatedDecks: Deck[];
-    this.currentMockDecks$.subscribe((x) =>
-      x.forEach((deck) => updatedDecks.push(deck))
-    );
-    updatedDecks.push(newDeck);
-    this.mockDecksSubject.next(updatedDecks);
+    const updatedDecks: Deck[] = [...decks, newDeck];
+    this.update(updatedDecks);
   }
 
+  // TODO: This needs work
   updateDeck(deck: Deck) {
-    let updatedDecks: Deck[];
-    this.currentMockDecks$.subscribe((x) =>
-      x.forEach((deck) => updatedDecks.push(deck))
-    );
-    updatedDecks.push(deck);
-    this.mockDecksSubject.next(updatedDecks);
+    const decks: Deck[] = this.decksSubject.value;
+    const updatedDecks: Deck[] = decks.map((x) => {
+      if (x.id === deck.id) x = deck;
+      return x;
+    });
+    decks.concat(updatedDecks);
+    this.update(updatedDecks);
   }
 
   deleteDeck(deck: Deck) {
-    let updatedDecks: Deck[];
-    this.currentMockDecks$.subscribe(
-      (x) => (updatedDecks = x.filter((d) => d.id !== deck.id))
-    );
-    this.mockDecksSubject.next(updatedDecks);
+    const decks: Deck[] = this.decksSubject.value;
+    const updatedDecks: Deck[] = decks.filter((d) => d.id !== deck.id);
+    this.update(updatedDecks);
+  }
+
+  update(deck: Deck[]) {
+    this.decksSubject.next(deck);
   }
 }

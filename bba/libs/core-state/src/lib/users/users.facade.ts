@@ -17,7 +17,7 @@ let users: User[] = [
     description: 'Pending',
     firstName: 'Kaleb',
     lastName: 'Huddleston',
-    email: 'kaleb@cards.com',
+    email: 'kaleb@users.com',
     password: 'insecure',
     profilePic: 'https://s3.amazonaws.com/uifaces/faces/twitter/baires/128.jpg',
   },
@@ -28,7 +28,7 @@ let users: User[] = [
     description: 'Pending.',
     firstName: 'Bob',
     lastName: 'Smith',
-    email: 'bob@cards.com',
+    email: 'bob@users.com',
     password: 'insecure',
     profilePic:
       'https://s3.amazonaws.com/uifaces/faces/twitter/teeragit/128.jpg',
@@ -40,7 +40,7 @@ let users: User[] = [
     description: 'Pending.',
     firstName: 'Timmy',
     lastName: 'Jackson',
-    email: 'timmy@cards.com',
+    email: 'timmy@users.com',
     password: 'insecure',
     profilePic:
       'https://s3.amazonaws.com/uifaces/faces/twitter/meelford/128.jpg',
@@ -49,10 +49,8 @@ let users: User[] = [
 
 @Injectable()
 export class UsersFacade {
-  private mockUsersSubject: BehaviorSubject<User[]> = new BehaviorSubject(
-    users
-  );
-  currentMockUsers$ = this.mockUsersSubject.asObservable();
+  private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject(users);
+  currentUsers$ = this.usersSubject.asObservable();
   /**
    * Combine pieces of state using createSelector,
    * and expose them as observables through the facade.
@@ -72,29 +70,30 @@ export class UsersFacade {
   }
 
   createUser(user: User) {
+    const users: User[] = this.usersSubject.value;
     const newUser = Object.assign({}, user, { id: uuidv4() });
-    let updatedUsers: User[];
-    this.currentMockUsers$.subscribe((x) =>
-      x.forEach((u) => updatedUsers.push(u))
-    );
-    updatedUsers.push(newUser);
-    this.mockUsersSubject.next(updatedUsers);
+    const updatedUsers: User[] = [...users, newUser];
+    this.update(updatedUsers);
   }
 
+  // TODO: This needs work
   updateUser(user: User) {
-    let updatedUsers: User[];
-    this.currentMockUsers$.subscribe((x) =>
-      x.forEach((u) => updatedUsers.push(u))
-    );
-    updatedUsers.push(user);
-    this.mockUsersSubject.next(updatedUsers);
+    const users: User[] = this.usersSubject.value;
+    const updatedUsers: User[] = users.map((x) => {
+      if (x.id === user.id) x = user;
+      return x;
+    });
+    users.concat(updatedUsers);
+    this.update(updatedUsers);
   }
 
   deleteUser(user: User) {
-    let updatedUsers: User[];
-    this.currentMockUsers$.subscribe(
-      (x) => (updatedUsers = x.filter((u) => u.id !== user.id))
-    );
-    this.mockUsersSubject.next(updatedUsers);
+    const users: User[] = this.usersSubject.value;
+    const updatedUsers: User[] = users.filter((c) => c.id !== user.id);
+    this.update(updatedUsers);
+  }
+
+  update(users: User[]) {
+    this.usersSubject.next(users);
   }
 }
