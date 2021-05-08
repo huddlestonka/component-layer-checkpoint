@@ -1,2 +1,2 @@
 # component-layer-checkpoint
-Nx workspace with NgRx displaying component data via facade
+Angular Nx workspace displaying component data via facade
