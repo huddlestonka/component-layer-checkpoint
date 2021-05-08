@@ -5,9 +5,39 @@ import { select, Store, Action } from '@ngrx/store';
 import * as CardsActions from './cards.actions';
 import * as CardsFeature from './cards.reducer';
 import * as CardsSelectors from './cards.selectors';
+import { v4 as uuidv4 } from 'uuid';
+import { BehaviorSubject } from 'rxjs';
+import { Card } from '@bba/api-interfaces';
+
+let mockCards: Card[] = [
+  {
+    id: '21789f40-b0fb-4aa6-8e88-376b4edf9jn8',
+    title: 'Monastery Swiftspear',
+    deckId: '--TBD--',
+    description: '',
+    manaCost: [new Map<'red', 1>()],
+    stats: '1/2',
+    textBox: 'Haste, Prowess',
+    typeLine: 'Creature - Human Monk',
+  },
+  {
+    id: '21569f40-b3fb-as34-8e88-378b4edf2frg',
+    title: 'Lava Dart',
+    deckId: '--TBD--',
+    description: '',
+    manaCost: [new Map<'red', 1>()],
+    stats: '',
+    textBox: 'Lava Dart deals 1 damage to target creature or player, Flashback',
+    typeLine: 'Instant',
+  },
+];
 
 @Injectable()
 export class CardsFacade {
+  private mockCardsSubject: BehaviorSubject<Card[]> = new BehaviorSubject(
+    mockCards
+  );
+  currentMockCards$ = this.mockCardsSubject.asObservable();
   /**
    * Combine pieces of state using createSelector,
    * and expose them as observables through the facade.
@@ -24,5 +54,32 @@ export class CardsFacade {
    */
   init() {
     this.store.dispatch(CardsActions.init());
+  }
+
+  createCard(card: Card) {
+    const newCard = Object.assign({}, card, { id: uuidv4() });
+    let updatedCards: Card[];
+    this.currentMockCards$.subscribe((x) =>
+      x.forEach((card) => updatedCards.push(card))
+    );
+    updatedCards.push(newCard);
+    this.mockCardsSubject.next(updatedCards);
+  }
+
+  updateCard(card: Card) {
+    let updatedCards: Card[];
+    this.currentMockCards$.subscribe((x) =>
+      x.forEach((card) => updatedCards.push(card))
+    );
+    updatedCards.push(card);
+    this.mockCardsSubject.next(updatedCards);
+  }
+
+  deleteCard(card: Card) {
+    let updatedCards: Card[];
+    this.currentMockCards$.subscribe(
+      (x) => (updatedCards = x.filter((d) => d.id !== card.id))
+    );
+    this.mockCardsSubject.next(updatedCards);
   }
 }
