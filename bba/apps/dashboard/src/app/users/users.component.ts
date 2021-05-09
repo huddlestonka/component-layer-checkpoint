@@ -10,7 +10,7 @@ import { UsersFacade } from '@bba/core-state';
   providers: [UsersFacade],
 })
 export class UsersComponent implements OnInit {
-  users$: Observable<User[]> = this.usersFacade.currentUsers$;
+  users$: Observable<User[]> = this.usersFacade.allUsers();
   selectedUser$: Observable<User> = this.usersFacade.selectedUser$;
 
   constructor(private usersFacade: UsersFacade) {}

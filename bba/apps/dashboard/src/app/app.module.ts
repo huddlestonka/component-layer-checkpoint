@@ -17,6 +17,7 @@ import { HomeComponent } from './home/home.component';
 import { MaterialModule } from '@bba/material';
 import { FormsModule } from '@angular/forms';
 import { RoutingModule } from './routing.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { RoutingModule } from './routing.module';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
     RoutingModule,

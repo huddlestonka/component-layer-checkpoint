@@ -8,49 +8,12 @@ import * as UsersSelectors from './users.selectors';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@bba/api-interfaces';
 import { BehaviorSubject } from 'rxjs';
-
-let users: User[] = [
-  {
-    id: '21789f40-b0fb-4aa6-8e88-376b4edfmnhy',
-    title: 'Software Engineer',
-    role: 'user',
-    description: 'Pending',
-    firstName: 'Kaleb',
-    lastName: 'Huddleston',
-    email: 'kaleb@users.com',
-    password: 'insecure',
-    profilePic: 'https://s3.amazonaws.com/uifaces/faces/twitter/baires/128.jpg',
-  },
-  {
-    id: '21789f40-b0fb-4aa6-8e88-376b4edf0ldd',
-    title: 'Engineering Manager',
-    role: 'manager',
-    description: 'Pending.',
-    firstName: 'Bob',
-    lastName: 'Smith',
-    email: 'bob@users.com',
-    password: 'insecure',
-    profilePic:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/teeragit/128.jpg',
-  },
-  {
-    id: '21789f40-b0fb-4aa6-8e88-376b4edfkh84',
-    title: 'Enterprise Developer',
-    role: 'admin',
-    description: 'Pending.',
-    firstName: 'Timmy',
-    lastName: 'Jackson',
-    email: 'timmy@users.com',
-    password: 'insecure',
-    profilePic:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/meelford/128.jpg',
-  },
-];
+import { UsersService } from '@bba/core-data';
 
 @Injectable()
 export class UsersFacade {
-  private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject(users);
-  currentUsers$ = this.usersSubject.asObservable();
+  // private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject(users);
+  // currentUsers$ = this.usersSubject.asObservable();
   private selectedUserSubject: BehaviorSubject<User> = new BehaviorSubject(
     null
   );
@@ -63,7 +26,7 @@ export class UsersFacade {
   allUsers$ = this.store.pipe(select(UsersSelectors.getAllUsers));
   selectedUsers$ = this.store.pipe(select(UsersSelectors.getSelected));
 
-  constructor(private store: Store) {}
+  constructor(private store: Store, private usersService: UsersService) {}
 
   /**
    * Use the initialization action to perform one
@@ -73,32 +36,23 @@ export class UsersFacade {
     this.store.dispatch(UsersActions.init());
   }
 
+  allUsers() {
+    return this.usersService.all();
+  }
+
   selectUser(selectedUser: User) {
     this.selectedUserSubject.next(selectedUser);
   }
 
   createUser(user: User) {
-    const users: User[] = this.usersSubject.value;
-    const newUser = Object.assign({}, user, { id: uuidv4() });
-    const updatedUsers: User[] = [...users, newUser];
-    this.update(updatedUsers);
+    this.usersService.create(user);
   }
 
   updateUser(user: User) {
-    const users: User[] = this.usersSubject.value;
-    const updatedUsers: User[] = users.map((u) => {
-      return u.id === user.id ? Object.assign({}, user) : u;
-    });
-    this.update(updatedUsers);
+    this.usersService.update(user);
   }
 
   deleteUser(user: User) {
-    const users: User[] = this.usersSubject.value;
-    const updatedUsers: User[] = users.filter((c) => c.id !== user.id);
-    this.update(updatedUsers);
-  }
-
-  update(users: User[]) {
-    this.usersSubject.next(users);
+    this.usersService.delete(user);
   }
 }
