@@ -51,7 +51,7 @@ let users: User[] = [
 export class UsersFacade {
   private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject(users);
   currentUsers$ = this.usersSubject.asObservable();
-  private selectedUserSubject: BehaviorSubject<string> = new BehaviorSubject(
+  private selectedUserSubject: BehaviorSubject<User> = new BehaviorSubject(
     null
   );
   selectedUser$ = this.selectedUserSubject.asObservable();
@@ -73,8 +73,8 @@ export class UsersFacade {
     this.store.dispatch(UsersActions.init());
   }
 
-  selectUser(selectedId: string) {
-    this.selectedUserSubject.next(selectedId);
+  selectUser(selectedUser: User) {
+    this.selectedUserSubject.next(selectedUser);
   }
 
   createUser(user: User) {
@@ -84,14 +84,11 @@ export class UsersFacade {
     this.update(updatedUsers);
   }
 
-  // TODO: This needs work
   updateUser(user: User) {
     const users: User[] = this.usersSubject.value;
-    const updatedUsers: User[] = users.map((x) => {
-      if (x.id === user.id) x = user;
-      return x;
+    const updatedUsers: User[] = users.map((u) => {
+      return u.id === user.id ? Object.assign({}, user) : u;
     });
-    users.concat(updatedUsers);
     this.update(updatedUsers);
   }
 

@@ -11,7 +11,7 @@ import { UsersFacade } from '@bba/core-state';
 })
 export class UsersComponent implements OnInit {
   users$: Observable<User[]> = this.usersFacade.currentUsers$;
-  selectedUser$: Observable<string> = this.usersFacade.selectedUser$;
+  selectedUser$: Observable<User> = this.usersFacade.selectedUser$;
 
   constructor(private usersFacade: UsersFacade) {}
 
@@ -22,10 +22,11 @@ export class UsersComponent implements OnInit {
   }
 
   selectUser(user: User) {
-    this.usersFacade.selectUser(user.id);
+    this.usersFacade.selectUser(user);
   }
 
   saveUser(user: User) {
+    console.log('USER: ', user);
     if (user.id) {
       this.usersFacade.updateUser(user);
     } else {
