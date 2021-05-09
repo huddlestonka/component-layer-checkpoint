@@ -21,6 +21,10 @@ export class UsersComponent implements OnInit {
     this.usersFacade.selectUser(null);
   }
 
+  selectUser(user: User) {
+    this.usersFacade.selectUser(user.id);
+  }
+
   saveUser(user: User) {
     if (user.id) {
       this.usersFacade.updateUser(user);

@@ -6,6 +6,7 @@
         *ngFor="let user of users"
         attr.data-cy="user-{{ user.id }}-item"
         class="mat-list-option"
+        (click)="selected.emit(user)"
         data-cy="list-item"
       >
         <span matLine attr.data-cy="user-{{ user.id }}-item-title"

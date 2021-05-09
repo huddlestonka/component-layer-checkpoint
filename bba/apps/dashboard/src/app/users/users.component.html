@@ -1,6 +1,10 @@
 <div class="component-container">
   <div class="list-component">
-    <bba-users-list [users]="users$ | async" (deleted)="deleteUser($event)">
+    <bba-users-list
+      [users]="users$ | async"
+      (selected)="selectUser($event)"
+      (deleted)="deleteUser($event)"
+    >
     </bba-users-list>
   </div>
   <div class="details-component">
