@@ -43,6 +43,14 @@
       "email": "bobby@users.com",
       "password": "insecure",
       "profilePic": "https://s3.amazonaws.com/uifaces/faces/twitter/baires/128.jpg"
+    },
+    {
+      "title": "Magician",
+      "firstName": "Davey",
+      "lastName": "Jones",
+      "email": "jones@cards.com",
+      "password": "asdf",
+      "id": "763pabI"
     }
   ]
 }

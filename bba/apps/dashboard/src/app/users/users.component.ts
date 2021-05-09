@@ -10,12 +10,14 @@ import { UsersFacade } from '@bba/core-state';
   providers: [UsersFacade],
 })
 export class UsersComponent implements OnInit {
-  users$: Observable<User[]> = this.usersFacade.allUsers();
+  users$: Observable<User[]> = this.usersFacade.currentUsers$;
   selectedUser$: Observable<User> = this.usersFacade.selectedUser$;
 
   constructor(private usersFacade: UsersFacade) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.usersFacade.allUsers();
+  }
 
   resetForm() {
     this.usersFacade.selectUser(null);
@@ -26,7 +28,6 @@ export class UsersComponent implements OnInit {
   }
 
   saveUser(user: User) {
-    console.log('USER: ', user);
     if (user.id) {
       this.usersFacade.updateUser(user);
     } else {

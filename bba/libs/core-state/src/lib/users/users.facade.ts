@@ -7,16 +7,16 @@ import * as UsersFeature from './users.reducer';
 import * as UsersSelectors from './users.selectors';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@bba/api-interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { UsersService } from '@bba/core-data';
 
 @Injectable()
 export class UsersFacade {
-  // private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject(users);
-  // currentUsers$ = this.usersSubject.asObservable();
+  private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject([]);
   private selectedUserSubject: BehaviorSubject<User> = new BehaviorSubject(
     null
   );
+  currentUsers$ = this.usersSubject.asObservable();
   selectedUser$ = this.selectedUserSubject.asObservable();
   /**
    * Combine pieces of state using createSelector,
@@ -36,23 +36,23 @@ export class UsersFacade {
     this.store.dispatch(UsersActions.init());
   }
 
-  allUsers() {
-    return this.usersService.all();
-  }
-
   selectUser(selectedUser: User) {
     this.selectedUserSubject.next(selectedUser);
   }
 
+  allUsers() {
+    this.usersService.all().subscribe((data) => this.update(data)); // temporary
+  }
   createUser(user: User) {
-    this.usersService.create(user);
+    this.usersService.create(user).subscribe((data) => this.allUsers()); // temp: rehydrate users
   }
-
   updateUser(user: User) {
-    this.usersService.update(user);
+    this.usersService.update(user).subscribe((data) => this.allUsers()); // temp: rehydrate users
   }
-
   deleteUser(user: User) {
-    this.usersService.delete(user);
+    this.usersService.delete(user).subscribe((data) => this.allUsers()); // temp: rehydrate users
+  }
+  private update(users: User[]) {
+    this.usersSubject.next(users);
   }
 }

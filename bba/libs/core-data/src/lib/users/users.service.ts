@@ -22,7 +22,7 @@ export class UsersService {
   }
 
   create(user: User) {
-    return this.http.post(this.getUrl(), user), { headers: headers };
+    return this.http.post(this.getUrl(), user, { headers: headers });
   }
 
   update(user: User) {
