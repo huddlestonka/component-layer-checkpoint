@@ -1,1 +1,27 @@
-<p>decks-list works!</p>
+<mat-card>
+  <mat-card-title> Decks </mat-card-title>
+  <mat-card-content>
+    <mat-list data-cy="decks-list">
+      <mat-list-item
+        *ngFor="let deck of decks"
+        attr.data-cy="deck-{{ deck.id }}-item"
+        class="mat-list-option"
+        (click)="selected.emit(deck)"
+      >
+        <span matLine attr.data-cy="deck-{{ deck.id }}-item-title">{{
+          deck.title
+        }}</span>
+        <button
+          *ngIf="!readonly"
+          attr.data-cy="delete-deck-{{ deck.id }}-btn"
+          mat-icon-button
+          type="button"
+          color="warn"
+          (click)="deleted.emit(deck); $event.stopImmediatePropagation()"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+</mat-card>

@@ -1,1 +1,12 @@
-<p>decks works!</p>
+<div class="component-container">
+  <div class="list-component">
+    <bba-decks-list [decks]="decks" (deleted)="deleteDeck($event)">
+    </bba-decks-list>
+  </div>
+  <div class="details-component">
+    <!-- <bba-deck-details [course]="selectedCourse$ | async"
+        (saved)="saveCourse($event)"
+        (cancelled)="resetForm()">
+      </bba-deck-details> -->
+  </div>
+</div>

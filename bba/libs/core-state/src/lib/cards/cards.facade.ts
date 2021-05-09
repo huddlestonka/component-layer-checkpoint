@@ -56,6 +56,10 @@ export class CardsFacade {
     this.store.dispatch(CardsActions.init());
   }
 
+  loadCards() {
+    return this.currentCards$;
+  }
+
   createCard(card: Card) {
     const cards: Card[] = this.cardsSubject.value;
     const newCard = Object.assign({}, card, { id: uuidv4() });
