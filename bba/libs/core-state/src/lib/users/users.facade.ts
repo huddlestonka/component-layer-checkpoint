@@ -51,6 +51,10 @@ let users: User[] = [
 export class UsersFacade {
   private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject(users);
   currentUsers$ = this.usersSubject.asObservable();
+  private selectedUserSubject: BehaviorSubject<string> = new BehaviorSubject(
+    null
+  );
+  selectedUser$ = this.selectedUserSubject.asObservable();
   /**
    * Combine pieces of state using createSelector,
    * and expose them as observables through the facade.
@@ -67,6 +71,10 @@ export class UsersFacade {
    */
   init() {
     this.store.dispatch(UsersActions.init());
+  }
+
+  selectUser(selectedId: string) {
+    this.selectedUserSubject.next(selectedId);
   }
 
   createUser(user: User) {

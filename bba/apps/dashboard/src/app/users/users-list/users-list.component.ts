@@ -9,6 +9,6 @@ import { User } from '@bba/api-interfaces';
 export class UsersListComponent {
   @Input() users: User[];
   @Input() readonly = false;
-  //@Output() selected = new EventEmitter();
+  @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();
 }

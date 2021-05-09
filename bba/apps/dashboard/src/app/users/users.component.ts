@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { User } from '@bba/api-interfaces';
 import { UsersFacade } from '@bba/core-state';
 
@@ -9,16 +9,16 @@ import { UsersFacade } from '@bba/core-state';
   styleUrls: ['./users.component.scss'],
   providers: [UsersFacade],
 })
-export class UsersComponent implements OnInit, OnDestroy {
-  users: User[];
-  sub: Subscription;
+export class UsersComponent implements OnInit {
+  users$: Observable<User[]> = this.usersFacade.currentUsers$;
+  selectedUser$: Observable<string> = this.usersFacade.selectedUser$;
 
   constructor(private usersFacade: UsersFacade) {}
 
-  ngOnInit(): void {
-    this.sub = this.usersFacade.currentUsers$.subscribe(
-      (x) => (this.users = x)
-    );
+  ngOnInit(): void {}
+
+  resetForm() {
+    this.usersFacade.selectUser(null);
   }
 
   saveUser(user: User) {
@@ -31,9 +31,5 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   deleteUser(user: User) {
     this.usersFacade.deleteUser(user);
-  }
-
-  ngOnDestroy() {
-    this.sub.unsubscribe();
   }
 }
