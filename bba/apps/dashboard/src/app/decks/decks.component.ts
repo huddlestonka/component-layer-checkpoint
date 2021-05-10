@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Deck } from '@bba/api-interfaces';
 import { DecksFacade } from '@bba/core-state';
 

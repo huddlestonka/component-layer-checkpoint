@@ -18,13 +18,13 @@ export interface DecksPartialState {
 
 export const decksAdapter: EntityAdapter<DecksEntity> = createEntityAdapter<DecksEntity>();
 
-export const initialState: State = decksAdapter.getInitialState({
+export const initialDecksState: State = decksAdapter.getInitialState({
   // set initial required properties
   loaded: false,
 });
 
 const decksReducer = createReducer(
-  initialState,
+  initialDecksState,
   on(DecksActions.init, (state) => ({ ...state, loaded: false, error: null })),
   on(DecksActions.loadDecksSuccess, (state, { decks }) =>
     decksAdapter.setAll(decks, { ...state, loaded: true })
