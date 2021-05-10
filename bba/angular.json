@@ -169,7 +169,8 @@
           "outputs": ["coverage/libs/core-data"],
           "options": {
             "jestConfig": "libs/core-data/jest.config.js",
-            "passWithNoTests": true
+            "passWithNoTests": true,
+            "codeCoverage": true
           }
         }
       }
