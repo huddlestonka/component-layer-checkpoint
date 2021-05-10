@@ -42,7 +42,6 @@ export class UsersFacade {
   }
 
   createUser(user: User) {
-    // We are generate the UUID at the client because of a sqlite limitation
     this.dispatch(
       UsersActions.createUser({
         user: Object.assign({}, user, { id: uuidv4() }),

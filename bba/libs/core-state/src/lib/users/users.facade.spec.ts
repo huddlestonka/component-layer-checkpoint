@@ -1,118 +1,106 @@
-import { NgModule } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { readFirst } from '@nrwl/angular/testing';
+import { ActionsSubject } from '@ngrx/store';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
 
-import { EffectsModule } from '@ngrx/effects';
-import { StoreModule, Store } from '@ngrx/store';
-
-import { NxModule } from '@nrwl/angular';
-
-import { UsersEntity } from './users.models';
-import { UsersEffects } from './users.effects';
 import { UsersFacade } from './users.facade';
-
-import * as UsersSelectors from './users.selectors';
 import * as UsersActions from './users.actions';
-import {
-  USERS_FEATURE_KEY,
-  State,
-  initialState,
-  reducer,
-} from './users.reducer';
+import { initialUsersState } from './users.reducer';
 
-interface TestSchema {
-  users: State;
-}
+import { mockUser } from '@bba/testing';
 
 describe('UsersFacade', () => {
   let facade: UsersFacade;
-  let store: Store<TestSchema>;
-  const createUsersEntity = (id: string, name = '') =>
-    ({
-      id,
-      name: name || `name-${id}`,
-    } as UsersEntity);
+  let actionSubject;
+  const mockActionsSubject = new ActionsSubject();
+  let store: MockStore;
 
-  beforeEach(() => {});
-
-  describe('used in NgModule', () => {
-    beforeEach(() => {
-      @NgModule({
-        imports: [
-          StoreModule.forFeature(USERS_FEATURE_KEY, reducer),
-          EffectsModule.forFeature([UsersEffects]),
-        ],
-        providers: [UsersFacade],
-      })
-      class CustomFeatureModule {}
-
-      @NgModule({
-        imports: [
-          NxModule.forRoot(),
-          StoreModule.forRoot({}),
-          EffectsModule.forRoot([]),
-          CustomFeatureModule,
-        ],
-      })
-      class RootModule {}
-      TestBed.configureTestingModule({ imports: [RootModule] });
-
-      store = TestBed.inject(Store);
-      facade = TestBed.inject(UsersFacade);
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        UsersFacade,
+        provideMockStore({ initialState: initialUsersState }),
+        { provide: ActionsSubject, useValue: mockActionsSubject },
+      ],
     });
 
-    /**
-     * The initially generated facade::loadAll() returns empty array
-     */
-    it('loadAll() should return empty list with loaded == true', async (done) => {
-      try {
-        let list = await readFirst(facade.allUsers$);
-        let isLoaded = await readFirst(facade.loaded$);
+    facade = TestBed.inject(UsersFacade);
+    actionSubject = TestBed.inject(ActionsSubject);
+    store = TestBed.inject(MockStore);
+  });
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(false);
+  it('should be created', () => {
+    expect(facade).toBeTruthy();
+  });
 
-        facade.init();
+  it('should have mutations', (done) => {
+    const action = UsersActions.createUser({ user: mockUser });
+    actionSubject.next(action);
 
-        list = await readFirst(facade.allUsers$);
-        isLoaded = await readFirst(facade.loaded$);
+    facade.mutations$.subscribe((result) => {
+      expect(result).toBe(action);
+      done();
+    });
+  });
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(true);
+  describe('should dispatch', () => {
+    it('select on select(user.id)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        done();
-      } catch (err) {
-        done.fail(err);
-      }
+      facade.selectUser(mockUser.id);
+
+      const action = UsersActions.selectUser({ selectedId: mockUser.id });
+
+      expect(spy).toHaveBeenCalledWith(action);
     });
 
-    /**
-     * Use `loadUsersSuccess` to manually update list
-     */
-    it('allUsers$ should return the loaded list; and loaded flag == true', async (done) => {
-      try {
-        let list = await readFirst(facade.allUsers$);
-        let isLoaded = await readFirst(facade.loaded$);
+    it('loadUsers on loadUsers()', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(false);
+      facade.loadUsers();
 
-        store.dispatch(
-          UsersActions.loadUsersSuccess({
-            users: [createUsersEntity('AAA'), createUsersEntity('BBB')],
-          })
-        );
+      const action = UsersActions.loadUsers();
 
-        list = await readFirst(facade.allUsers$);
-        isLoaded = await readFirst(facade.loaded$);
+      expect(spy).toHaveBeenCalledWith(action);
+    });
 
-        expect(list.length).toBe(2);
-        expect(isLoaded).toBe(true);
+    it('loadUser on loadUser(user.id)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        done();
-      } catch (err) {
-        done.fail(err);
-      }
+      facade.loadUser(mockUser.id);
+
+      const action = UsersActions.loadUser({ userId: mockUser.id });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('createUser on createUser(user)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.createUser(mockUser);
+
+      const action = UsersActions.createUser({ user: mockUser });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('updateUser on updateUser(user)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.updateUser(mockUser);
+
+      const action = UsersActions.updateUser({ user: mockUser });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('delete on delete(model)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.deleteUser(mockUser);
+
+      const action = UsersActions.deleteUser({ user: mockUser });
+
+      expect(spy).toHaveBeenCalledWith(action);
     });
   });
 });

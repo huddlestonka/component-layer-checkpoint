@@ -194,7 +194,8 @@
           "outputs": ["coverage/libs/core-state"],
           "options": {
             "jestConfig": "libs/core-state/jest.config.js",
-            "passWithNoTests": true
+            "passWithNoTests": true,
+            "codeCoverage": true
           }
         }
       }
@@ -244,6 +245,31 @@
           "outputs": ["coverage/libs/api-interfaces"],
           "options": {
             "jestConfig": "libs/api-interfaces/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "testing": {
+      "projectType": "library",
+      "root": "libs/testing",
+      "sourceRoot": "libs/testing/src",
+      "prefix": "bba",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/testing/src/**/*.ts",
+              "libs/testing/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/testing"],
+          "options": {
+            "jestConfig": "libs/testing/jest.config.js",
             "passWithNoTests": true
           }
         }

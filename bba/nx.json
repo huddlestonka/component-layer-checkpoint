@@ -17,6 +17,7 @@
     "core-data": { "tags": [] },
     "core-state": { "tags": [] },
     "material": { "tags": [] },
-    "api-interfaces": { "tags": [] }
+    "api-interfaces": { "tags": [] },
+    "testing": { "tags": [] }
   }
 }
