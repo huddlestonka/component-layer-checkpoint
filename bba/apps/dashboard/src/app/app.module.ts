@@ -18,6 +18,7 @@ import { MaterialModule } from '@bba/material';
 import { FormsModule } from '@angular/forms';
 import { RoutingModule } from './routing.module';
 import { HttpClientModule } from '@angular/common/http';
+import { CoreStateModule } from '@bba/core-state';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,7 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     RoutingModule,
     MaterialModule,
-    StoreModule.forRoot({}, {}),
+    CoreStateModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

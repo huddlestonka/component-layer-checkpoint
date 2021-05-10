@@ -1,27 +1,31 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StoreModule } from '@ngrx/store';
+import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
-import * as fromUsers from './users/users.reducer';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { RootStoreConfig, StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
+import { reducers } from '.';
+
 import { UsersEffects } from './users/users.effects';
-import { UsersFacade } from './users/users.facade';
-import * as fromDecks from './decks/decks.reducer';
-import { DecksEffects } from './decks/decks.effects';
-import { DecksFacade } from './decks/decks.facade';
-import * as fromCards from './cards/cards.reducer';
-import { CardsEffects } from './cards/cards.effects';
-import { CardsFacade } from './cards/cards.facade';
+
+const STORE_NAME = 'bba-store';
+const storeConfig: RootStoreConfig<any> = {
+  runtimeChecks: {
+    strictActionImmutability: true,
+    strictActionSerializability: true,
+    strictStateImmutability: true,
+    strictStateSerializability: true,
+  },
+};
 
 @NgModule({
   imports: [
     CommonModule,
-    StoreModule.forFeature(fromUsers.USERS_FEATURE_KEY, fromUsers.reducer),
-    EffectsModule.forFeature([UsersEffects]),
-    StoreModule.forFeature(fromDecks.DECKS_FEATURE_KEY, fromDecks.reducer),
-    EffectsModule.forFeature([DecksEffects]),
-    StoreModule.forFeature(fromCards.CARDS_FEATURE_KEY, fromCards.reducer),
-    EffectsModule.forFeature([CardsEffects]),
+    StoreModule.forRoot(reducers, storeConfig),
+    EffectsModule.forRoot([UsersEffects]),
+    StoreDevtoolsModule.instrument({ maxAge: 25, name: STORE_NAME }),
+    StoreRouterConnectingModule.forRoot({ stateKey: 'router' }),
   ],
-  providers: [UsersFacade, DecksFacade, CardsFacade],
 })
 export class CoreStateModule {}

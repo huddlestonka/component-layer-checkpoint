@@ -1,58 +1,64 @@
 import { Injectable } from '@angular/core';
-
-import { select, Store, Action } from '@ngrx/store';
-
-import * as UsersActions from './users.actions';
-import * as UsersFeature from './users.reducer';
-import * as UsersSelectors from './users.selectors';
-import { v4 as uuidv4 } from 'uuid';
 import { User } from '@bba/api-interfaces';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { UsersService } from '@bba/core-data';
+import { Action, ActionsSubject, select, Store } from '@ngrx/store';
+import { filter } from 'rxjs/operators';
+import { v4 as uuidv4 } from 'uuid';
+import * as UsersActions from './users.actions';
+import * as fromUsers from './users.reducer';
+import * as UsersSelectors from './users.selectors';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class UsersFacade {
-  private usersSubject: BehaviorSubject<User[]> = new BehaviorSubject([]);
-  private selectedUserSubject: BehaviorSubject<User> = new BehaviorSubject(
-    null
-  );
-  currentUsers$ = this.usersSubject.asObservable();
-  selectedUser$ = this.selectedUserSubject.asObservable();
-  /**
-   * Combine pieces of state using createSelector,
-   * and expose them as observables through the facade.
-   */
   loaded$ = this.store.pipe(select(UsersSelectors.getUsersLoaded));
   allUsers$ = this.store.pipe(select(UsersSelectors.getAllUsers));
-  selectedUsers$ = this.store.pipe(select(UsersSelectors.getSelected));
+  selectedUser$ = this.store.pipe(select(UsersSelectors.getSelectedUser));
 
-  constructor(private store: Store, private usersService: UsersService) {}
+  mutations$ = this.actions$.pipe(
+    filter(
+      (action: Action) =>
+        action.type === UsersActions.createUser({} as any).type ||
+        action.type === UsersActions.updateUser({} as any).type ||
+        action.type === UsersActions.deleteUser({} as any).type
+    )
+  );
 
-  /**
-   * Use the initialization action to perform one
-   * or more tasks in your Effects.
-   */
-  init() {
-    this.store.dispatch(UsersActions.init());
+  constructor(
+    private store: Store<fromUsers.UsersPartialState>,
+    private actions$: ActionsSubject
+  ) {}
+
+  selectUser(selectedId: string) {
+    this.dispatch(UsersActions.selectUser({ selectedId }));
   }
 
-  selectUser(selectedUser: User) {
-    this.selectedUserSubject.next(selectedUser);
+  loadUsers() {
+    this.dispatch(UsersActions.loadUsers());
   }
 
-  allUsers() {
-    this.usersService.all().subscribe((data) => this.update(data)); // temporary
+  loadUser(userId: string) {
+    this.dispatch(UsersActions.loadUser({ userId }));
   }
+
   createUser(user: User) {
-    this.usersService.create(user).subscribe((data) => this.allUsers()); // temp: rehydrate users
+    // We are generate the UUID at the client because of a sqlite limitation
+    this.dispatch(
+      UsersActions.createUser({
+        user: Object.assign({}, user, { id: uuidv4() }),
+      })
+    );
   }
+
   updateUser(user: User) {
-    this.usersService.update(user).subscribe((data) => this.allUsers()); // temp: rehydrate users
+    this.dispatch(UsersActions.updateUser({ user }));
   }
+
   deleteUser(user: User) {
-    this.usersService.delete(user).subscribe((data) => this.allUsers()); // temp: rehydrate users
+    this.dispatch(UsersActions.deleteUser({ user }));
   }
-  private update(users: User[]) {
-    this.usersSubject.next(users);
+
+  dispatch(action: Action) {
+    this.store.dispatch(action);
   }
 }

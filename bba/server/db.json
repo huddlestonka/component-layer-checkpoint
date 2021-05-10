@@ -23,17 +23,6 @@
       "profilePic": "https://s3.amazonaws.com/uifaces/faces/twitter/teeragit/128.jpg"
     },
     {
-      "id": "21789f40-b0fb-4aa6-8e88-376b4edfkh84",
-      "title": "Enterprise Developer",
-      "role": "admin",
-      "description": "Pending.",
-      "firstName": "Timmy",
-      "lastName": "Jackson",
-      "email": "timmy@users.com",
-      "password": "insecure",
-      "profilePic": "https://s3.amazonaws.com/uifaces/faces/twitter/meelford/128.jpg"
-    },
-    {
       "id": "21789f40-b0fb-4aa6-8e88-376b4edf876y",
       "title": "Nascar Driver",
       "role": "user",

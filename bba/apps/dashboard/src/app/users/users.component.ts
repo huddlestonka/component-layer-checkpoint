@@ -7,24 +7,33 @@ import { UsersFacade } from '@bba/core-state';
   selector: 'bba-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
-  providers: [UsersFacade],
 })
 export class UsersComponent implements OnInit {
-  users$: Observable<User[]> = this.usersFacade.currentUsers$;
-  selectedUser$: Observable<User> = this.usersFacade.selectedUser$;
+  users$: Observable<User[]> = this.usersFacade.allUsers$;
+  selectedUser$ = this.usersFacade.selectedUser$;
 
   constructor(private usersFacade: UsersFacade) {}
 
   ngOnInit(): void {
-    this.usersFacade.allUsers();
+    this.loadUsers();
+    this.usersFacade.mutations$.subscribe((_) => this.reset());
+  }
+
+  reset() {
+    this.loadUsers();
+    this.usersFacade.selectUser(null);
   }
 
   resetForm() {
     this.usersFacade.selectUser(null);
   }
 
+  loadUsers() {
+    this.usersFacade.loadUsers();
+  }
+
   selectUser(user: User) {
-    this.usersFacade.selectUser(user);
+    this.usersFacade.selectUser(user.id);
   }
 
   saveUser(user: User) {

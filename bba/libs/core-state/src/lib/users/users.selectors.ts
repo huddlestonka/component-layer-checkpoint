@@ -1,13 +1,9 @@
+import { User } from '@bba/api-interfaces';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import {
-  USERS_FEATURE_KEY,
-  State,
-  UsersPartialState,
-  usersAdapter,
-} from './users.reducer';
+import { USERS_FEATURE_KEY, UsersState, usersAdapter } from './users.reducer';
 
 // Lookup the 'Users' feature state managed by NgRx
-export const getUsersState = createFeatureSelector<UsersPartialState, State>(
+export const getUsersState = createFeatureSelector<UsersState>(
   USERS_FEATURE_KEY
 );
 
@@ -15,29 +11,44 @@ const { selectAll, selectEntities } = usersAdapter.getSelectors();
 
 export const getUsersLoaded = createSelector(
   getUsersState,
-  (state: State) => state.loaded
+  (state: UsersState) => state.loaded
 );
 
 export const getUsersError = createSelector(
   getUsersState,
-  (state: State) => state.error
+  (state: UsersState) => state.error
 );
 
-export const getAllUsers = createSelector(getUsersState, (state: State) =>
+export const getAllUsers = createSelector(getUsersState, (state: UsersState) =>
   selectAll(state)
 );
 
-export const getUsersEntities = createSelector(getUsersState, (state: State) =>
-  selectEntities(state)
-);
-
-export const getSelectedId = createSelector(
+export const getUsersEntities = createSelector(
   getUsersState,
-  (state: State) => state.selectedId
+  (state: UsersState) => selectEntities(state)
 );
 
-export const getSelected = createSelector(
+export const getSelectedUserId = createSelector(
+  getUsersState,
+  (state: UsersState) => state.selectedId
+);
+
+export const getSelectedUser = createSelector(
   getUsersEntities,
-  getSelectedId,
-  (entities, selectedId) => selectedId && entities[selectedId]
+  getSelectedUserId,
+  (entities, selectedId) => {
+    const emptyUser: User = {
+      id: '',
+      role: '',
+      title: '',
+      description: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      profilePic: '',
+    };
+
+    return selectedId ? entities[selectedId] : emptyUser;
+  }
 );

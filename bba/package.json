@@ -25,7 +25,10 @@
     "update": "nx migrate latest",
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
-    "help": "nx help"
+    "help": "nx help",
+    "serve:json": "json-server server/db.json",
+    "serve:web": "ng serve",
+    "serve:all": "concurrently \"npm run serve:json\" \"npm run serve:web\""
   },
   "private": true,
   "dependencies": {
@@ -45,6 +48,7 @@
     "@ngrx/router-store": "^11.1.0",
     "@ngrx/store": "^11.1.1",
     "@nrwl/angular": "12.1.1",
+    "concurrently": "^6.1.0",
     "json-server": "^0.16.3",
     "lowdb": "^1.0.0",
     "rxjs": "~6.6.3",
